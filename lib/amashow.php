@@ -42,7 +42,7 @@ class Amashow {
         foreach ($html->find('div[id="main"] table font[color="blue"]') as $e) {
             $rank = substr($e->innertext,0,-1);
     }
-        if (!$rank) exit("amashowランキング取得の際にエラーが発生しました"."\n");
+        if (!$rank) return '';
         return $rank;
     }
 }
