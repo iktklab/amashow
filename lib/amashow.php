@@ -4,10 +4,10 @@ class Amashow {
 
     const AMASHOW_URL = 'http://amashow.com/rank.php?kwd=';
 
-    public function getRank($asin, $category = '') {
+    public function getRank($asin) {
         $url = self::AMASHOW_URL.$asin;
         $content = $this->getHtml($url);
-        $rank = $this->getRanktoHtml($content, $category);
+        $rank = $this->getRanktoHtml($content);
         return $rank;
     }
 
@@ -35,20 +35,20 @@ class Amashow {
         curl_close($ch);
     }
 
-    public function getRanktoHtml($content, $category) {
+    public function getRanktoHtml($content) {
         $html = str_get_html($content);
-        if ($category == 'Books') {
+        foreach ($html->find('div[id="main"] table font[color="blue"]') as $e) {
+            $rank = substr($e->innertext,0,-1);
+        }
+        if (!isset($rank)) {
             foreach ($html->find('div[id="main"] table') as $e) {
                 if (preg_match('/本 - ([0-9]*)位/',$e->innertext, $matches)) {
                     $rank = $matches[1];
                 }
             }
-        } else {
-            foreach ($html->find('div[id="main"] table font[color="blue"]') as $e) {
-                $rank = substr($e->innertext,0,-1);
-            }
         }
-        if (!$rank) return '';
+        $html->clear();
+        if (!isset($rank)) return '';
         return $rank;
     }
 }
